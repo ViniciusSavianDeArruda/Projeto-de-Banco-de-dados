@@ -1,3 +1,5 @@
+-- Trabalho final disciplina Banco de Dados e modelo logico e conceitual
+
 -- Criar o banco de dados
 CREATE DATABASE ACADEMIA;
 GO

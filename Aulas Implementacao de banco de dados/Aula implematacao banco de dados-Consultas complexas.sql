@@ -1,4 +1,5 @@
 --Aula implementacao de banco de dados dia 12/08/25---
+-- Consultas SQL Banco de dados empresa
 
 --INNER JOIN: Retorna registros que possuem valores correspondentes em ambas as tabelas
 --LEFT JOIN: Retorna todos os registros da tabela da esquerda e os registros correspondentes da tabela da direita
@@ -7,7 +8,7 @@
 
 
 -- INNER JOIN
---Selecionar o primeiro nome, último nome, endereço dos funcionários que trabalham no departamento de “Pesquisa”.
+--Selecionar o primeiro nome, ï¿½ltimo nome, endereï¿½o dos funcionï¿½rios que trabalham no departamento de ï¿½Pesquisaï¿½.
 SELECT F.Pnome, F.Unome, F.Endereco 
 FROM FUNCIONARIO F
 INNER JOIN DEPARTAMENTO D
@@ -15,7 +16,7 @@ ON F.Dnr = D.Dnumero
 WHERE D.Dnome = 'Pesquisa';
 GO
 
---Liste o nome dos funcionários que estão desenvolvendo o “ProdutoX”.
+--Liste o nome dos funcionï¿½rios que estï¿½o desenvolvendo o ï¿½ProdutoXï¿½.
 SELECT F.Pnome, F.Unome
 FROM FUNCIONARIO F
 INNER JOIN TRABALHA_EM T ON F.Cpf = T.Fcpf
@@ -23,8 +24,8 @@ INNER JOIN PROJETO P ON T.Pnr = P.Projnumero
 WHERE P.Projnome = 'ProdutoX';
 GO
 
---Para cada projeto localizado em “Mauá”, liste o número do projeto, 
---o número do departamento que o controla e o sobrenome, endereço e data de nascimento do gerente do departamento.
+--Para cada projeto localizado em ï¿½Mauï¿½, liste o nï¿½mero do projeto, 
+--o nï¿½mero do departamento que o controla e o sobrenome, endereï¿½o e data de nascimento do gerente do departamento.
 SELECT P.Projnome, P.Projnumero, D.Dnome, D.Dnumero, F.Unome, F.Endereco, F.Datanasc
 FROM FUNCIONARIO AS F
 INNER JOIN DEPARTAMENTO AS D
@@ -33,11 +34,11 @@ INNER JOIN LOCALIZACAO_DEP AS LD
 	ON LD.Dnumero = D.Dnumero
 INNER JOIN PROJETO AS P
 	ON P.Dnum = D.Dnumero
-WHERE LD.Dlocal = 'Mauá';
+WHERE LD.Dlocal = 'Mauï¿½';
 GO
 
 --LEFT JOIN
---Liste o último nome de TODOS os funcionários e o último nome dos respectivos gerentes, caso possuam
+--Liste o ï¿½ltimo nome de TODOS os funcionï¿½rios e o ï¿½ltimo nome dos respectivos gerentes, caso possuam
 SELECT *
 FROM FUNCIONARIO AS F 
 WHERE F.Cpf_supervisor IS NOT NULL;
@@ -48,7 +49,7 @@ FROM FUNCIONARIO AS F
 LEFT JOIN FUNCIONARIO AS G ON F.Cpf_supervisor = G.Cpf
 GO
 
---Encontre os funcionários que não possuem um departamento a eles vinculado
+--Encontre os funcionï¿½rios que nï¿½o possuem um departamento a eles vinculado
 SELECT *
 FROM FUNCIONARIO AS F
 LEFT JOIN DEPARTAMENTO AS D ON D.Dnumero = f.Dnr
@@ -105,7 +106,7 @@ SELECT D.Nome_dependente AS Nome, D.Sexo, D.Datanasc
 FROM DEPENDENTE AS D
 UNION
 SELECT F.Pnome AS Nome, F.Sexo, F.Datanasc
-FROM FUNCIONARIO AS F;
+FROM FUNCIONARIOï¿½ASï¿½F;
 GO
 
 

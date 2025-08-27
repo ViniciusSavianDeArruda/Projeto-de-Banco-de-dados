@@ -1,4 +1,5 @@
 --- Aula Implementacao de banco de dados - 05/08/25 ---
+-- Consultas SQL Banco de dados empresa
 
 -- DISTINCT
 SELECT DISTINCT FUNCIONARIO.SALARIO
@@ -13,14 +14,14 @@ SELECT * FROM FUNCIONARIO WHERE sexo ='M' AND SALARIO > 30000;
 
 ---ON
 SELECT *FROM FUNCIONARIO AS F 
-WHERE F.endereco LIKE '%São Paulo%' 
+WHERE F.endereco LIKE '%Sï¿½o Paulo%' 
 	OR F.Endereco LIKE '%Curitiba%';
 
 
 -- NOT
 SELECT *
 FROM FUNCIONARIO AS F 
-WHERE NOT F.endereco LIKE '%São Paulo%' 
+WHERE NOT F.endereco LIKE '%Sï¿½o Paulo%' 
 GO
 
 -- ORDER BY ASC/DESC
@@ -113,7 +114,7 @@ SET @AnoNascimento = (SELECT Datanasc
 PRINT YEAR(@AnoNascimento);
 
 
---Recupere o(s) funcionário(s) nascido(s) no ano de 72.
+--Recupere o(s) funcionï¿½rio(s) nascido(s) no ano de 72.
 SELECT *
 FROM FUNCIONARIO 
 WHERE YEAR (Datanasc) LIKE '__72%';
