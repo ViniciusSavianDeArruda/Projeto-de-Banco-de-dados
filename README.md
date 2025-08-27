@@ -1,73 +1,30 @@
-# 📊 Banco de Dados - Projetos e Exercícios
+# Banco de Dados - Projetos SQL
 
-Este repositório contém exercícios, projetos e materiais de estudo das disciplinas de **Banco de Dados** do curso de graduação.
+Repositório com exercícios e projetos de banco de dados.
 
-## 📁 Estrutura do Repositório
+## 📁 Estrutura
 
-```
-📦 Database-Projects
-├── 📁 Aulas Implementacao de banco de dados/
-│   ├── Aula banco de dados- Consultas.sql
-│   └── Aula implementacao de banco de dados.sql
-├── 📁 Aulas-Banco de dados/
-│   └── Aula.md
-├── 📁 ExerciciosSQL/
-│   ├── Banco de dados FaculdadeExercicio.sql
-│   └── Exercicio Companhia_Aerea.sql
-├── 📁 ProjetoFinal-BancoDeDados/
-│   └── sqlacademia.sql
-└── 📁 DesafioMicrosoft/
-    └── MICROSOFT- Banco de dados.sql
-```
-
-## 🎯 Conteúdo por Pasta
-
-### 📚 Aulas Implementacao de banco de dados
-Contém os scripts SQL das aulas práticas:
-- **Consultas básicas**: SELECT, WHERE, JOIN, funções de agregação
-- **Programação SQL**: Variáveis, estruturas condicionais, loops
-- **Consultas avançadas**: Subconsultas, views, procedures
-
-### 📖 Aulas-Banco de dados
-Material teórico em formato Markdown:
-- **DDL**: Comandos de definição (CREATE, ALTER, DROP)
-- **DML**: Comandos de manipulação (INSERT, UPDATE, DELETE)
-- **Tipos de dados** e boas práticas
-
-### 💻 ExerciciosSQL
-Exercícios práticos com diferentes domínios:
-- **Sistema Acadêmico**: Gestão de alunos, disciplinas e notas
-- **Companhia Aérea**: Controle de voos, aeroportos e reservas
-
-### 🏆 ProjetoFinal-BancoDeDados
-Projeto completo de sistema para academia:
-- Gestão de alunos e personal trainers
-- Fichas de treino e exercícios
-- Controle de frequência e avaliações físicas
-
-### 🚀 DesafioMicrosoft
-Exercícios específicos do desafio Microsoft.
+- **Aulas-Projeto-BancoDeDados/** - Material teórico (DDL, DML)
+- **ExerciciosSQL/** - Exercícios práticos (Faculdade, Companhia Aérea)
+- **ProjetoFinal-BancoDeDados/** - Sistema completo para academia
 
 ## 🛠️ Tecnologias
 
-- **SGBD**: MySQL / SQL Server
-- **Linguagem**: SQL
-- **Ferramentas**: MySQL Workbench
+- MySQL / SQL Server
+- SQL (DDL, DML, DQL)
 
-## ⚡ Como Usar
+## 🚀 Como usar
 
 1. Clone o repositório
-2. Abra os arquivos `.sql` no seu SGBD preferido
-3. Execute os scripts na ordem: criação → inserção → consultas
+2. Abra os arquivos `.sql` no seu SGBD
+3. Execute os scripts
 
-## 📝 Principais Conceitos
+## 📚 Conteúdo
 
-- Modelagem de dados (conceitual e lógico)
-- Comandos SQL (DDL, DML, DQL)
-- Relacionamentos e chaves estrangeiras
-- Consultas complexas e otimização
-- Normalização de dados
+- Criação e modificação de tabelas
+- Consultas básicas e avançadas
+- Relacionamentos entre tabelas
+- Exercícios práticos com diferentes domínios
 
 ---
-
-**Desenvolvido para fins acadêmicos e educacionais.**
+*Material acadêmico para estudo de banco de dados*
