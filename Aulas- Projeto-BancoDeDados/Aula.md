@@ -551,3 +551,579 @@ Este material aborda os conceitos fundamentais de SQL, cobrindo tanto **DDL** (e
 5. **Organização** e apresentação de resultados (`ORDER BY`, `DISTINCT`)
 
 Estes comandos formam a base essencial para trabalhar com bancos de dados relacionais, permitindo criar, manter e consultar informações de forma eficiente e segura.
+
+---
+
+## 🔍 Consultas Complexas em SQL
+
+As **consultas complexas** em SQL permitem extrair informações específicas e realizar análises avançadas dos dados armazenados no banco. Este material aborda os principais conceitos e técnicas para construir consultas sofisticadas.
+
+### 📊 Funções de Agregação
+
+As funções de agregação realizam cálculos em conjuntos de valores e retornam um único resultado.
+
+#### Principais Funções
+
+| Função | Descrição | Exemplo |
+|--------|-----------|---------|
+| `COUNT()` | Conta o número de registros | `SELECT COUNT(*) FROM funcionario` |
+| `SUM()` | Soma valores numéricos | `SELECT SUM(salario) FROM funcionario` |
+| `AVG()` | Calcula a média | `SELECT AVG(salario) FROM funcionario` |
+| `MAX()` | Retorna o maior valor | `SELECT MAX(salario) FROM funcionario` |
+| `MIN()` | Retorna o menor valor | `SELECT MIN(salario) FROM funcionario` |
+
+**Exemplo Prático:**
+```sql
+-- Salário médio por departamento
+SELECT Dnr, AVG(Salario) as salario_medio
+FROM FUNCIONARIO
+GROUP BY Dnr;
+```
+
+### 🔗 JOINS - Relacionando Tabelas
+
+Os JOINs permitem combinar dados de múltiplas tabelas baseado em relacionamentos.
+
+#### Tipos de JOIN
+
+##### INNER JOIN
+Retorna apenas registros que têm correspondência em ambas as tabelas.
+
+```sql
+SELECT f.Pnome, f.Unome, d.Dnome
+FROM FUNCIONARIO f
+INNER JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero;
+```
+
+##### LEFT JOIN (LEFT OUTER JOIN)
+Retorna todos os registros da tabela à esquerda e os correspondentes da direita.
+
+```sql
+SELECT f.Pnome, f.Unome, d.Dnome
+FROM FUNCIONARIO f
+LEFT JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero;
+```
+
+##### RIGHT JOIN (RIGHT OUTER JOIN)
+Retorna todos os registros da tabela à direita e os correspondentes da esquerda.
+
+```sql
+SELECT f.Pnome, f.Unome, d.Dnome
+FROM FUNCIONARIO f
+RIGHT JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero;
+```
+
+##### FULL OUTER JOIN
+Retorna todos os registros quando há correspondência em qualquer uma das tabelas.
+
+```sql
+SELECT f.Pnome, f.Unome, d.Dnome
+FROM FUNCIONARIO f
+FULL OUTER JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero;
+```
+
+### 📋 GROUP BY e HAVING
+
+#### GROUP BY
+Agrupa registros que têm valores iguais em colunas específicas.
+
+```sql
+SELECT Dnr, COUNT(*) as total_funcionarios
+FROM FUNCIONARIO
+GROUP BY Dnr;
+```
+
+#### HAVING
+Filtra grupos criados pelo GROUP BY (equivalente ao WHERE para grupos).
+
+```sql
+SELECT Dnr, AVG(Salario) as salario_medio
+FROM FUNCIONARIO
+GROUP BY Dnr
+HAVING AVG(Salario) > 40000;
+```
+
+### 🔍 Subconsultas (Subqueries)
+
+Consultas aninhadas dentro de outras consultas para resolver problemas complexos.
+
+#### Subconsulta Simples
+```sql
+-- Funcionários que ganham mais que a média
+SELECT Pnome, Unome, Salario
+FROM FUNCIONARIO
+WHERE Salario > (SELECT AVG(Salario) FROM FUNCIONARIO);
+```
+
+#### Subconsulta com IN
+```sql
+-- Funcionários que trabalham em projetos específicos
+SELECT Pnome, Unome
+FROM FUNCIONARIO
+WHERE Cpf IN (
+    SELECT Fcpf 
+    FROM TRABALHA_EM 
+    WHERE Pnr IN (1, 2, 3)
+);
+```
+
+#### Subconsulta com EXISTS
+```sql
+-- Funcionários que têm dependentes
+SELECT f.Pnome, f.Unome
+FROM FUNCIONARIO f
+WHERE EXISTS (
+    SELECT 1 
+    FROM DEPENDENTE d 
+    WHERE d.Fcpf = f.Cpf
+);
+```
+
+### 🔄 Operadores de Conjunto
+
+#### UNION
+Combina resultados de duas ou mais consultas (remove duplicatas).
+
+```sql
+SELECT Pnome, Unome FROM FUNCIONARIO WHERE Dnr = 1
+UNION
+SELECT Pnome, Unome FROM FUNCIONARIO WHERE Salario > 50000;
+```
+
+#### UNION ALL
+Combina resultados mantendo duplicatas.
+
+```sql
+SELECT Pnome FROM FUNCIONARIO WHERE Dnr = 1
+UNION ALL
+SELECT Pnome FROM FUNCIONARIO WHERE Salario > 50000;
+```
+
+#### INTERSECT
+Retorna apenas registros que aparecem em ambas as consultas.
+
+```sql
+SELECT Cpf FROM FUNCIONARIO WHERE Dnr = 1
+INTERSECT
+SELECT Fcpf FROM TRABALHA_EM WHERE Horas > 20;
+```
+
+#### EXCEPT (ou MINUS)
+Retorna registros da primeira consulta que não estão na segunda.
+
+```sql
+SELECT Cpf FROM FUNCIONARIO
+EXCEPT
+SELECT Fcpf FROM DEPENDENTE;
+```
+
+### 🎯 Consultas Correlacionadas
+
+Subconsultas que referenciam colunas da consulta externa.
+
+```sql
+-- Funcionários com salário acima da média do seu departamento
+SELECT f1.Pnome, f1.Unome, f1.Salario, f1.Dnr
+FROM FUNCIONARIO f1
+WHERE f1.Salario > (
+    SELECT AVG(f2.Salario)
+    FROM FUNCIONARIO f2
+    WHERE f2.Dnr = f1.Dnr
+);
+```
+
+### 📊 Window Functions (Funções de Janela)
+
+Permitem realizar cálculos em um conjunto de linhas relacionadas à linha atual.
+
+#### ROW_NUMBER()
+```sql
+SELECT Pnome, Unome, Salario,
+       ROW_NUMBER() OVER (ORDER BY Salario DESC) as ranking
+FROM FUNCIONARIO;
+```
+
+#### RANK() e DENSE_RANK()
+```sql
+SELECT Pnome, Unome, Salario,
+       RANK() OVER (ORDER BY Salario DESC) as ranking,
+       DENSE_RANK() OVER (ORDER BY Salario DESC) as dense_ranking
+FROM FUNCIONARIO;
+```
+
+#### PARTITION BY
+```sql
+SELECT Pnome, Unome, Salario, Dnr,
+       ROW_NUMBER() OVER (PARTITION BY Dnr ORDER BY Salario DESC) as ranking_dept
+FROM FUNCIONARIO;
+```
+
+### 🔢 Expressões CASE
+
+Permite lógica condicional dentro das consultas.
+
+#### CASE Simples
+```sql
+SELECT Pnome, Unome, Salario,
+       CASE 
+           WHEN Salario > 50000 THEN 'Alto'
+           WHEN Salario > 30000 THEN 'Médio'
+           ELSE 'Baixo'
+       END as faixa_salarial
+FROM FUNCIONARIO;
+```
+
+#### CASE com Múltiplas Condições
+```sql
+SELECT Pnome, Unome,
+       CASE 
+           WHEN Dnr = 1 THEN 'Administração'
+           WHEN Dnr = 2 THEN 'Pesquisa'
+           WHEN Dnr = 3 THEN 'Desenvolvimento'
+           ELSE 'Outros'
+       END as nome_departamento
+FROM FUNCIONARIO;
+```
+
+### 📈 Common Table Expressions (CTE)
+
+Consultas temporárias nomeadas que podem ser referenciadas na consulta principal.
+
+#### CTE Simples
+```sql
+WITH funcionarios_senior AS (
+    SELECT Cpf, Pnome, Unome, Salario
+    FROM FUNCIONARIO
+    WHERE Salario > 40000
+)
+SELECT fs.Pnome, fs.Unome, d.Dnome
+FROM funcionarios_senior fs
+JOIN DEPARTAMENTO d ON fs.Dnr = d.Dnumero;
+```
+
+#### CTE Recursiva
+```sql
+WITH hierarquia_funcionarios AS (
+    -- Caso base: gerentes (sem supervisor)
+    SELECT Cpf, Pnome, Unome, Cpf_supervisor, 1 as nivel
+    FROM FUNCIONARIO
+    WHERE Cpf_supervisor IS NULL
+    
+    UNION ALL
+    
+    -- Caso recursivo: funcionários com supervisor
+    SELECT f.Cpf, f.Pnome, f.Unome, f.Cpf_supervisor, h.nivel + 1
+    FROM FUNCIONARIO f
+    JOIN hierarquia_funcionarios h ON f.Cpf_supervisor = h.Cpf
+)
+SELECT * FROM hierarquia_funcionarios
+ORDER BY nivel, Pnome;
+```
+
+### 🎲 Funções de String
+
+#### Manipulação de Texto
+```sql
+-- Concatenação
+SELECT CONCAT(Pnome, ' ', Unome) as nome_completo
+FROM FUNCIONARIO;
+
+-- Substring
+SELECT SUBSTRING(Endereco, 1, 10) as endereco_resumido
+FROM FUNCIONARIO;
+
+-- Maiúscula/Minúscula
+SELECT UPPER(Pnome) as nome_maiusculo,
+       LOWER(Unome) as sobrenome_minusculo
+FROM FUNCIONARIO;
+
+-- Comprimento
+SELECT Pnome, LENGTH(Pnome) as tamanho_nome
+FROM FUNCIONARIO;
+```
+
+### 📅 Funções de Data
+
+#### Manipulação de Datas
+```sql
+-- Data atual
+SELECT CURRENT_DATE, CURRENT_TIME, NOW();
+
+-- Extrair partes da data
+SELECT Pnome, Datanasc,
+       YEAR(Datanasc) as ano_nascimento,
+       MONTH(Datanasc) as mes_nascimento,
+       DAY(Datanasc) as dia_nascimento
+FROM FUNCIONARIO;
+
+-- Calcular idade
+SELECT Pnome, Datanasc,
+       DATEDIFF(YEAR, Datanasc, CURRENT_DATE) as idade
+FROM FUNCIONARIO;
+
+-- Adicionar/Subtrair tempo
+SELECT DATEADD(YEAR, 1, Datanasc) as data_mais_um_ano
+FROM FUNCIONARIO;
+```
+
+### 🔍 Consultas Avançadas - Exemplos Práticos
+
+#### Ranking de Funcionários por Salário
+```sql
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY Salario DESC) as posicao,
+    Pnome, Unome, Salario,
+    ROUND((Salario / (SELECT SUM(Salario) FROM FUNCIONARIO)) * 100, 2) as percentual_folha
+FROM FUNCIONARIO
+ORDER BY Salario DESC;
+```
+
+#### Análise de Departamentos
+```sql
+SELECT 
+    d.Dnome,
+    COUNT(f.Cpf) as total_funcionarios,
+    AVG(f.Salario) as salario_medio,
+    MIN(f.Salario) as menor_salario,
+    MAX(f.Salario) as maior_salario,
+    SUM(f.Salario) as folha_total
+FROM DEPARTAMENTO d
+LEFT JOIN FUNCIONARIO f ON d.Dnumero = f.Dnr
+GROUP BY d.Dnumero, d.Dnome
+ORDER BY total_funcionarios DESC;
+```
+
+#### Funcionários e Seus Projetos
+```sql
+SELECT 
+    f.Pnome, f.Unome,
+    COUNT(te.Pnr) as total_projetos,
+    SUM(te.Horas) as total_horas,
+    STRING_AGG(p.Projnome, ', ') as projetos
+FROM FUNCIONARIO f
+LEFT JOIN TRABALHA_EM te ON f.Cpf = te.Fcpf
+LEFT JOIN PROJETO p ON te.Pnr = p.Projnumero
+GROUP BY f.Cpf, f.Pnome, f.Unome
+ORDER BY total_horas DESC;
+```
+
+#### Hierarquia Organizacional
+```sql
+SELECT 
+    f.Pnome + ' ' + f.Unome as funcionario,
+    COALESCE(s.Pnome + ' ' + s.Unome, 'Sem supervisor') as supervisor,
+    d.Dnome as departamento
+FROM FUNCIONARIO f
+LEFT JOIN FUNCIONARIO s ON f.Cpf_supervisor = s.Cpf
+JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero
+ORDER BY d.Dnome, supervisor, funcionario;
+```
+
+### 🎯 Consultas com Múltiplas Condições
+
+#### Operadores Lógicos Avançados
+```sql
+-- Funcionários em múltiplos critérios
+SELECT Pnome, Unome, Salario, Dnr
+FROM FUNCIONARIO
+WHERE (Salario BETWEEN 30000 AND 60000)
+   AND (Dnr IN (1, 2))
+   AND (Datanasc >= '1960-01-01')
+   AND (Endereco LIKE '%São Paulo%');
+```
+
+#### Consultas com NOT EXISTS
+```sql
+-- Funcionários sem dependentes
+SELECT f.Pnome, f.Unome
+FROM FUNCIONARIO f
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM DEPENDENTE d 
+    WHERE d.Fcpf = f.Cpf
+);
+```
+
+### 📊 Análises Estatísticas
+
+#### Distribuição Salarial
+```sql
+WITH faixas_salariais AS (
+    SELECT 
+        CASE 
+            WHEN Salario < 25000 THEN 'Até 25k'
+            WHEN Salario < 40000 THEN '25k-40k'
+            WHEN Salario < 60000 THEN '40k-60k'
+            ELSE 'Acima de 60k'
+        END as faixa,
+        COUNT(*) as quantidade
+    FROM FUNCIONARIO
+    GROUP BY 
+        CASE 
+            WHEN Salario < 25000 THEN 'Até 25k'
+            WHEN Salario < 40000 THEN '25k-40k'
+            WHEN Salario < 60000 THEN '40k-60k'
+            ELSE 'Acima de 60k'
+        END
+)
+SELECT faixa, quantidade,
+       ROUND((quantidade * 100.0 / (SELECT COUNT(*) FROM FUNCIONARIO)), 2) as percentual
+FROM faixas_salariais
+ORDER BY 
+    CASE faixa
+        WHEN 'Até 25k' THEN 1
+        WHEN '25k-40k' THEN 2
+        WHEN '40k-60k' THEN 3
+        ELSE 4
+    END;
+```
+
+#### Top N Consultas
+```sql
+-- Top 5 funcionários com maior salário por departamento
+WITH ranking_salarios AS (
+    SELECT f.Pnome, f.Unome, f.Salario, d.Dnome,
+           ROW_NUMBER() OVER (PARTITION BY f.Dnr ORDER BY f.Salario DESC) as ranking
+    FROM FUNCIONARIO f
+    JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero
+)
+SELECT Pnome, Unome, Salario, Dnome
+FROM ranking_salarios
+WHERE ranking <= 5
+ORDER BY Dnome, ranking;
+```
+
+### 🔧 Funções Condicionais Avançadas
+
+#### COALESCE
+Retorna o primeiro valor não nulo.
+
+```sql
+SELECT Pnome, Unome,
+       COALESCE(Cpf_supervisor, 'Sem supervisor') as supervisor_info
+FROM FUNCIONARIO;
+```
+
+#### NULLIF
+Retorna NULL se os dois valores forem iguais.
+
+```sql
+SELECT Pnome, Unome,
+       NULLIF(Salario, 0) as salario_valido
+FROM FUNCIONARIO;
+```
+
+### 📋 Consultas de Relatório
+
+#### Relatório Gerencial Completo
+```sql
+WITH resumo_departamento AS (
+    SELECT 
+        d.Dnumero,
+        d.Dnome,
+        COUNT(f.Cpf) as total_funcionarios,
+        AVG(f.Salario) as salario_medio,
+        SUM(f.Salario) as folha_total,
+        COUNT(p.Projnumero) as total_projetos
+    FROM DEPARTAMENTO d
+    LEFT JOIN FUNCIONARIO f ON d.Dnumero = f.Dnr
+    LEFT JOIN PROJETO p ON d.Dnumero = p.Dnum
+    GROUP BY d.Dnumero, d.Dnome
+),
+estatisticas_gerais AS (
+    SELECT 
+        AVG(salario_medio) as media_geral_salarios,
+        SUM(folha_total) as folha_empresa_total,
+        SUM(total_funcionarios) as total_funcionarios_empresa
+    FROM resumo_departamento
+)
+SELECT 
+    rd.Dnome,
+    rd.total_funcionarios,
+    ROUND(rd.salario_medio, 2) as salario_medio,
+    ROUND(rd.folha_total, 2) as folha_departamento,
+    rd.total_projetos,
+    ROUND((rd.folha_total / eg.folha_empresa_total) * 100, 2) as percentual_folha_empresa
+FROM resumo_departamento rd
+CROSS JOIN estatisticas_gerais eg
+ORDER BY rd.folha_total DESC;
+```
+
+### 🎯 Otimização de Consultas
+
+#### Boas Práticas
+
+1. **Use índices apropriados**
+   ```sql
+   CREATE INDEX idx_funcionario_salario ON FUNCIONARIO(Salario);
+   CREATE INDEX idx_funcionario_departamento ON FUNCIONARIO(Dnr);
+   ```
+
+2. **Evite SELECT ***
+   ```sql
+   -- ❌ Evite
+   SELECT * FROM FUNCIONARIO;
+   
+   -- ✅ Prefira
+   SELECT Pnome, Unome, Salario FROM FUNCIONARIO;
+   ```
+
+3. **Use LIMIT para consultas exploratórias**
+   ```sql
+   SELECT Pnome, Unome, Salario
+   FROM FUNCIONARIO
+   ORDER BY Salario DESC
+   LIMIT 10;
+   ```
+
+4. **Filtre cedo com WHERE**
+   ```sql
+   -- ✅ Melhor performance
+   SELECT f.Pnome, d.Dnome
+   FROM FUNCIONARIO f
+   JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero
+   WHERE f.Salario > 40000;
+   ```
+
+### 💡 Dicas Avançadas
+
+#### Consultas Dinâmicas
+- Use variáveis para consultas parametrizadas
+- Implemente paginação para grandes resultados
+- Considere views para consultas complexas frequentes
+
+#### Análise de Performance
+- Use EXPLAIN PLAN para analisar execução
+- Monitore consultas lentas
+- Considere particionamento para tabelas grandes
+
+#### Segurança
+- Sempre valide entrada de usuários
+- Use prepared statements
+- Implemente controle de acesso baseado em roles
+
+---
+
+## 🎯 Resumo de Consultas Complexas
+
+As consultas complexas em SQL são fundamentais para:
+
+1. **Análise de Dados**: Extrair insights significativos
+2. **Relatórios Gerenciais**: Criar dashboards e relatórios
+3. **Integridade de Dados**: Validar e verificar consistência
+4. **Performance**: Otimizar acesso aos dados
+5. **Business Intelligence**: Suportar tomada de decisões
+
+### Principais Conceitos Abordados:
+- ✅ Funções de agregação (COUNT, SUM, AVG, MAX, MIN)
+- ✅ JOINs (INNER, LEFT, RIGHT, FULL OUTER)
+- ✅ GROUP BY e HAVING para agrupamentos
+- ✅ Subconsultas e consultas correlacionadas
+- ✅ Operadores de conjunto (UNION, INTERSECT, EXCEPT)
+- ✅ Window Functions para análises avançadas
+- ✅ Expressões CASE para lógica condicional
+- ✅ CTEs para consultas estruturadas
+- ✅ Funções de string e data
+- ✅ Técnicas de otimização
+
+Dominar essas técnicas permite criar consultas poderosas e eficientes, essenciais para qualquer profissional que trabalhe com bancos de dados relacionais.
