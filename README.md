@@ -1,6 +1,6 @@
 # Banco de Dados - Projetos SQL
 
-Repositório com exercícios e projetos de banco de dados.
+Repositório da materia de banco de dados da faculdade SI e com mais algumas coisa que estudei durante a disciplina, esse repositorio é destinado a estudos e revisoes diarias com exercícios e projetos.
 
 ## 📁 Estrutura
 
