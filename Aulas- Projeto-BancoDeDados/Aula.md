@@ -513,6 +513,73 @@ SELECT * FROM FUNCIONARIO ORDER BY Salario DESC;
 -- Múltiplas colunas
 SELECT * FROM FUNCIONARIO ORDER BY Dnr ASC, Salario DESC;
 ```
+## 🔄 CAST - Conversão de Tipos de Dados
+
+O comando `CAST` permite converter explicitamente um valor de um tipo de dado para outro tipo. É essencial para garantir compatibilidade entre diferentes tipos de dados em operações e consultas.
+
+### 🎯 Para que serve o CAST?
+
+- **Conversão Explícita**: Transforma dados de um tipo para outro
+- **Compatibilidade**: Resolve conflitos de tipos em operações
+- **Formatação**: Prepara dados para apresentação específica
+- **Cálculos**: Permite operações entre tipos diferentes
+- **Validação**: Verifica se dados podem ser convertidos
+
+### Sintaxe
+```sql
+CAST(valor AS tipo_de_dado)
+-- ou sintaxe alternativa (alguns SGBDs)
+CONVERT(tipo_de_dado, valor)
+```
+### 📋 Tipos de Conversão Comuns
+
+#### String para Numérico
+```sql
+-- Converter string para inteiro
+SELECT CAST('123' AS INT) as numero;
+-- Resultado: 123
+
+-- Converter string para decimal
+SELECT CAST('45.67' AS DECIMAL(5,2)) as valor_decimal;
+-- Resultado: 45.67
+
+-- Usar em cálculos
+SELECT CAST('100' AS INT) + CAST('50' AS INT) as soma;
+-- Resultado: 150
+```
+
+#### Numérico para String
+```sql
+-- Converter número para string
+SELECT CAST(123.45 AS VARCHAR(10)) as texto;
+-- Resultado: '123.45'
+
+-- Converter inteiro para string com tamanho fixo
+SELECT CAST(42 AS CHAR(5)) as codigo;
+-- Resultado: '42   '
+```
+
+#### String para Data
+```sql
+-- Converter string para data
+SELECT CAST('2023-09-11' AS DATE) as data_convertida;
+-- Resultado: 2023-09-11
+
+-- Converter string para datetime
+SELECT CAST('2023-09-11 14:30:00' AS DATETIME) as data_hora;
+-- Resultado: 2023-09-11 14:30:00
+```
+
+#### Data para String
+```sql
+-- Converter data para string
+SELECT CAST(CURRENT_DATE AS VARCHAR(10)) as data_texto;
+-- Resultado: '2023-09-11'
+
+-- Converter datetime para string
+SELECT CAST(NOW() AS VARCHAR(20)) as data_hora_texto;
+-- Resultado: '2023-09-11 14:30:00'
+```
 
 ## 💡 Boas Práticas DML
 
@@ -732,32 +799,6 @@ WHERE f1.Salario > (
 );
 ```
 
-### 📊 Window Functions (Funções de Janela)
-
-Permitem realizar cálculos em um conjunto de linhas relacionadas à linha atual.
-
-#### ROW_NUMBER()
-```sql
-SELECT Pnome, Unome, Salario,
-       ROW_NUMBER() OVER (ORDER BY Salario DESC) as ranking
-FROM FUNCIONARIO;
-```
-
-#### RANK() e DENSE_RANK()
-```sql
-SELECT Pnome, Unome, Salario,
-       RANK() OVER (ORDER BY Salario DESC) as ranking,
-       DENSE_RANK() OVER (ORDER BY Salario DESC) as dense_ranking
-FROM FUNCIONARIO;
-```
-
-#### PARTITION BY
-```sql
-SELECT Pnome, Unome, Salario, Dnr,
-       ROW_NUMBER() OVER (PARTITION BY Dnr ORDER BY Salario DESC) as ranking_dept
-FROM FUNCIONARIO;
-```
-
 ### 🔢 Expressões CASE
 
 Permite lógica condicional dentro das consultas.
@@ -782,63 +823,6 @@ SELECT Pnome, Unome,
            WHEN Dnr = 3 THEN 'Desenvolvimento'
            ELSE 'Outros'
        END as nome_departamento
-FROM FUNCIONARIO;
-```
-
-### 📈 Common Table Expressions (CTE)
-
-Consultas temporárias nomeadas que podem ser referenciadas na consulta principal.
-
-#### CTE Simples
-```sql
-WITH funcionarios_senior AS (
-    SELECT Cpf, Pnome, Unome, Salario
-    FROM FUNCIONARIO
-    WHERE Salario > 40000
-)
-SELECT fs.Pnome, fs.Unome, d.Dnome
-FROM funcionarios_senior fs
-JOIN DEPARTAMENTO d ON fs.Dnr = d.Dnumero;
-```
-
-#### CTE Recursiva
-```sql
-WITH hierarquia_funcionarios AS (
-    -- Caso base: gerentes (sem supervisor)
-    SELECT Cpf, Pnome, Unome, Cpf_supervisor, 1 as nivel
-    FROM FUNCIONARIO
-    WHERE Cpf_supervisor IS NULL
-    
-    UNION ALL
-    
-    -- Caso recursivo: funcionários com supervisor
-    SELECT f.Cpf, f.Pnome, f.Unome, f.Cpf_supervisor, h.nivel + 1
-    FROM FUNCIONARIO f
-    JOIN hierarquia_funcionarios h ON f.Cpf_supervisor = h.Cpf
-)
-SELECT * FROM hierarquia_funcionarios
-ORDER BY nivel, Pnome;
-```
-
-### 🎲 Funções de String
-
-#### Manipulação de Texto
-```sql
--- Concatenação
-SELECT CONCAT(Pnome, ' ', Unome) as nome_completo
-FROM FUNCIONARIO;
-
--- Substring
-SELECT SUBSTRING(Endereco, 1, 10) as endereco_resumido
-FROM FUNCIONARIO;
-
--- Maiúscula/Minúscula
-SELECT UPPER(Pnome) as nome_maiusculo,
-       LOWER(Unome) as sobrenome_minusculo
-FROM FUNCIONARIO;
-
--- Comprimento
-SELECT Pnome, LENGTH(Pnome) as tamanho_nome
 FROM FUNCIONARIO;
 ```
 
@@ -992,98 +976,6 @@ FROM ranking_salarios
 WHERE ranking <= 5
 ORDER BY Dnome, ranking;
 ```
-
-### 🔧 Funções Condicionais Avançadas
-
-#### COALESCE
-Retorna o primeiro valor não nulo.
-
-```sql
-SELECT Pnome, Unome,
-       COALESCE(Cpf_supervisor, 'Sem supervisor') as supervisor_info
-FROM FUNCIONARIO;
-```
-
-#### NULLIF
-Retorna NULL se os dois valores forem iguais.
-
-```sql
-SELECT Pnome, Unome,
-       NULLIF(Salario, 0) as salario_valido
-FROM FUNCIONARIO;
-```
-
-### 📋 Consultas de Relatório
-
-#### Relatório Gerencial Completo
-```sql
-WITH resumo_departamento AS (
-    SELECT 
-        d.Dnumero,
-        d.Dnome,
-        COUNT(f.Cpf) as total_funcionarios,
-        AVG(f.Salario) as salario_medio,
-        SUM(f.Salario) as folha_total,
-        COUNT(p.Projnumero) as total_projetos
-    FROM DEPARTAMENTO d
-    LEFT JOIN FUNCIONARIO f ON d.Dnumero = f.Dnr
-    LEFT JOIN PROJETO p ON d.Dnumero = p.Dnum
-    GROUP BY d.Dnumero, d.Dnome
-),
-estatisticas_gerais AS (
-    SELECT 
-        AVG(salario_medio) as media_geral_salarios,
-        SUM(folha_total) as folha_empresa_total,
-        SUM(total_funcionarios) as total_funcionarios_empresa
-    FROM resumo_departamento
-)
-SELECT 
-    rd.Dnome,
-    rd.total_funcionarios,
-    ROUND(rd.salario_medio, 2) as salario_medio,
-    ROUND(rd.folha_total, 2) as folha_departamento,
-    rd.total_projetos,
-    ROUND((rd.folha_total / eg.folha_empresa_total) * 100, 2) as percentual_folha_empresa
-FROM resumo_departamento rd
-CROSS JOIN estatisticas_gerais eg
-ORDER BY rd.folha_total DESC;
-```
-
-### 🎯 Otimização de Consultas
-
-#### Boas Práticas
-
-1. **Use índices apropriados**
-   ```sql
-   CREATE INDEX idx_funcionario_salario ON FUNCIONARIO(Salario);
-   CREATE INDEX idx_funcionario_departamento ON FUNCIONARIO(Dnr);
-   ```
-
-2. **Evite SELECT ***
-   ```sql
-   -- ❌ Evite
-   SELECT * FROM FUNCIONARIO;
-   
-   -- ✅ Prefira
-   SELECT Pnome, Unome, Salario FROM FUNCIONARIO;
-   ```
-
-3. **Use LIMIT para consultas exploratórias**
-   ```sql
-   SELECT Pnome, Unome, Salario
-   FROM FUNCIONARIO
-   ORDER BY Salario DESC
-   LIMIT 10;
-   ```
-
-4. **Filtre cedo com WHERE**
-   ```sql
-   -- ✅ Melhor performance
-   SELECT f.Pnome, d.Dnome
-   FROM FUNCIONARIO f
-   JOIN DEPARTAMENTO d ON f.Dnr = d.Dnumero
-   WHERE f.Salario > 40000;
-   ```
 
 ### 💡 Dicas Avançadas
 
