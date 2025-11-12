@@ -977,23 +977,6 @@ WHERE ranking <= 5
 ORDER BY Dnome, ranking;
 ```
 
-### 💡 Dicas Avançadas
-
-#### Consultas Dinâmicas
-- Use variáveis para consultas parametrizadas
-- Implemente paginação para grandes resultados
-- Considere views para consultas complexas frequentes
-
-#### Análise de Performance
-- Use EXPLAIN PLAN para analisar execução
-- Monitore consultas lentas
-- Considere particionamento para tabelas grandes
-
-#### Segurança
-- Sempre valide entrada de usuários
-- Use prepared statements
-- Implemente controle de acesso baseado em roles
-
 ---
 
 ## 🎯 Resumo de Consultas Complexas
@@ -1018,4 +1001,3 @@ As consultas complexas em SQL são fundamentais para:
 - ✅ Funções de string e data
 - ✅ Técnicas de otimização
 
-Dominar essas técnicas permite criar consultas poderosas e eficientes, essenciais para qualquer profissional que trabalhe com bancos de dados relacionais.
